@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GitHub Throughput — Visualping</title>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #FCFCFD;
+    color: #202020;
+    padding: 48px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .page-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(79, 142, 247, 0.25);
+    background: rgba(79, 142, 247, 0.08);
+    color: #1882FF;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .page-badge svg { width: 12px; height: 12px; }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 700;
+    color: #202020;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #787878;
+    margin-bottom: 40px;
+    font-weight: 400;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat {
+    background: #fff;
+    border: 1px solid #EBEBF0;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s;
+  }
+  .stat:hover { box-shadow: 0 8px 28px rgba(24, 130, 255, 0.1); }
+  .stat-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .stat-label { font-size: 13px; color: #787878; font-weight: 500; }
+  .stat-sub { font-size: 11px; color: #b0b0b8; margin-top: 5px; }
+
+  .card {
+    background: #fff;
+    border: 1px solid #EBEBF0;
+    border-radius: 20px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .card-title { font-size: 15px; font-weight: 600; color: #202020; }
+  .card-subtitle { font-size: 12px; color: #787878; margin-top: 2px; }
+  .legend-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #787878;
+    background: #F5F5F8;
+    border-radius: 999px;
+    padding: 4px 10px;
+  }
+  .legend-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  canvas { max-height: 380px; }
+  .note { font-size: 11px; color: #b0b0b8; margin-top: 12px; }
+  .migration-note {
+    background: rgba(24, 130, 255, 0.05);
+    border: 1px solid rgba(24, 130, 255, 0.15);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #4f8ef7;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-badge">
+  <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>
+  Engineering Metrics
+</div>
+<h1>GitHub Throughput</h1>
+<p class="subtitle">webmonitoring org &mdash; Closed PRs by month, Jan 2023 &ndash; Apr 2026 &mdash; Apr 2026 is partial</p>
+
+<div class="migration-note">
+  Monorepo created Feb 2024. Prior activity tracked across <strong>visualping.io</strong> (~3,400 PRs) and <strong>vp-common</strong> (~751 PRs). Some overlap during migration Feb–Jun 2024.
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Closed PRs per Month</div>
+      <div class="card-subtitle">Stacked by repo &mdash; YoY % compares same month prior year</div>
+    </div>
+    <div class="legend-group" id="legend"></div>
+  </div>
+  <canvas id="mainChart"></canvas>
+  <p class="note">* YoY line starts Jan 2024 (requires 12 months of prior data). Apr 2026 is partial.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Incidents per Half-Year</div>
+      <div class="card-subtitle">Jan 2023 – Mar 2026 &mdash; H1 '26 is partial (Jan–Mar only)</div>
+    </div>
+    <div class="legend-group">
+      <div class="legend-pill"><span class="dot" style="background:#fca5a5"></span>Low (0–1)</div>
+      <div class="legend-pill"><span class="dot" style="background:#f97316"></span>Med (2–3)</div>
+      <div class="legend-pill"><span class="dot" style="background:#ef4444"></span>High (4+)</div>
+    </div>
+  </div>
+  <canvas id="incidentChart"></canvas>
+</div>
+
+<script>
+const allMonths = ["2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04"];
+const vpio = [50,87,82,72,59,77,42,19,22,55,58,16,27,40,11,17,38,73,32,104,45,49,88,107,63,43,38,44,81,40,0,0,0,0,0,0,0,0,0,0];
+const vpc  = [27,35,30,26,40,8,15,14,35,42,19,21,21,26,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+const mono = [0,0,0,0,0,0,0,0,0,0,0,0,0,2,44,97,65,31,30,33,64,115,121,37,102,97,89,115,114,132,198,183,214,182,254,137,227,255,391,87];
+
+// Incidents — data runs Jan 2023–Mar 2026 (39 months), Apr 2026 has no data yet
+const incidentData = [4,5,3,1,5,1,1,1,0,2,1,2,1,3,5,7,2,2,0,2,0,4,1,0,1,3,3,2,1,1,1,0,1,2,1,2,0,2,2,null];
+
+const labels = allMonths.map(m => {
+  const [y, mo] = m.split('-');
+  return new Date(+y, +mo - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+});
+
+const totals = allMonths.map((_, i) => vpio[i] + vpc[i] + mono[i]);
+
+// Monthly YoY: current month vs same month prior year
+const yoy = allMonths.map((_, i) => {
+  if (i < 12) return null;
+  const prev = totals[i - 12];
+  if (prev === 0) return null;
+  return Math.round((totals[i] - prev) / prev * 100);
+});
+
+// Half-year incident buckets
+const incidentHalfLabels = ["H1 '23","H2 '23","H1 '24","H2 '24","H1 '25","H2 '25","H1 '26*"];
+const incidentHalfData = [
+  incidentData.slice(0,6).reduce((a,b)=>a+(b??0),0),
+  incidentData.slice(6,12).reduce((a,b)=>a+(b??0),0),
+  incidentData.slice(12,18).reduce((a,b)=>a+(b??0),0),
+  incidentData.slice(18,24).reduce((a,b)=>a+(b??0),0),
+  incidentData.slice(24,30).reduce((a,b)=>a+(b??0),0),
+  incidentData.slice(30,36).reduce((a,b)=>a+(b??0),0),
+  incidentData.slice(36,39).reduce((a,b)=>a+(b??0),0), // partial
+];
+
+// PR YoY: full year 2025 vs 2024
+const pr2024 = totals.slice(12,24).reduce((a,b)=>a+b,0);
+const pr2025 = totals.slice(24,36).reduce((a,b)=>a+b,0);
+const prYoY  = Math.round((pr2025 - pr2024) / pr2024 * 100);
+
+// PR same time last year: Mar 2026 (index 38) vs Mar 2025 (index 26)
+const prYTD2026 = totals[38];
+const prYTD2025 = totals[26];
+const prSTLY    = Math.round((prYTD2026 - prYTD2025) / prYTD2025 * 100);
+
+// Incident YoY: full year 2025 vs 2024
+const inc2024 = incidentData.slice(12,24).reduce((a,b)=>a+(b??0),0);
+const inc2025 = incidentData.slice(24,36).reduce((a,b)=>a+(b??0),0);
+const incYoY  = Math.round((inc2025 - inc2024) / inc2024 * 100);
+
+function yoyColor(v) { return v > 0 ? '#16a34a' : v < 0 ? '#ef4444' : '#787878'; }
+function yoyLabel(v) { return `${v > 0 ? '+' : ''}${v}%`; }
+
+document.getElementById('stats').innerHTML = `
+  <div class="stat">
+    <div class="stat-value" style="color:${yoyColor(prYoY)}">${yoyLabel(prYoY)}</div>
+    <div class="stat-label">PR YoY</div>
+    <div class="stat-sub">2025 vs 2024 (${pr2025.toLocaleString()} vs ${pr2024.toLocaleString()})</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" style="color:${yoyColor(prSTLY)}">${yoyLabel(prSTLY)}</div>
+    <div class="stat-label">PR — Same Time Last Year</div>
+    <div class="stat-sub">Mar 2026 vs Mar 2025 (${prYTD2026} vs ${prYTD2025})</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" style="color:${yoyColor(incYoY)}">${yoyLabel(incYoY)}</div>
+    <div class="stat-label">Incident YoY</div>
+    <div class="stat-sub">2025 vs 2024 (${inc2025} vs ${inc2024})</div>
+  </div>
+`;
+
+document.getElementById('legend').innerHTML = `
+  <div class="legend-pill"><span class="dot" style="background:#f78166"></span>visualping.io</div>
+  <div class="legend-pill"><span class="dot" style="background:#f0883e"></span>vp-common</div>
+  <div class="legend-pill"><span class="dot" style="background:#7c3aed"></span>monorepo</div>
+  <div class="legend-pill"><span class="dot" style="background:#1882FF"></span>YoY %</div>
+`;
+
+const gridColor = '#F0F0F4';
+const tickColor = '#b0b0b8';
+
+new Chart(document.getElementById('mainChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      { label: 'visualping.io', data: vpio, backgroundColor: '#f78166', borderRadius: 3, stack: 'a', yAxisID: 'y' },
+      { label: 'vp-common',     data: vpc,  backgroundColor: '#f0883e', borderRadius: 3, stack: 'a', yAxisID: 'y' },
+      { label: 'monorepo',      data: mono, backgroundColor: '#7c3aed', borderRadius: 3, stack: 'a', yAxisID: 'y' },
+      {
+        label: 'YoY %',
+        data: yoy,
+        type: 'line',
+        yAxisID: 'yoy',
+        borderColor: '#1882FF',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointBackgroundColor: '#1882FF',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1.5,
+        tension: 0.4,
+        spanGaps: false,
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#fff',
+        borderColor: '#EBEBF0',
+        borderWidth: 1,
+        titleColor: '#202020',
+        bodyColor: '#787878',
+        padding: 12,
+        boxPadding: 4,
+        callbacks: {
+          footer: items => {
+            const barTotal = items.filter(i => i.dataset.yAxisID === 'y').reduce((s,i) => s + i.parsed.y, 0);
+            const yoyItem = items.find(i => i.dataset.label === 'YoY %');
+            const lines = [`Total PRs: ${barTotal}`];
+            if (yoyItem && yoyItem.parsed.y !== null) {
+              const v = yoyItem.parsed.y;
+              lines.push(`YoY: ${v > 0 ? '+' : ''}${v}%`);
+            }
+            return lines;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { color: gridColor }, ticks: { color: tickColor, maxRotation: 60, font: { size: 10, family: 'Satoshi' } } },
+      y: { stacked: true, position: 'left', grid: { color: gridColor }, ticks: { color: tickColor, font: { family: 'Satoshi' } }, title: { display: true, text: 'PRs closed', color: tickColor, font: { size: 11 } } },
+      yoy: {
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        ticks: { color: '#1882FF', font: { family: 'Satoshi', size: 11 }, callback: v => `${v > 0 ? '+' : ''}${v}%` },
+        title: { display: true, text: 'YoY %', color: '#1882FF', font: { size: 11 } }
+      }
+    }
+  }
+});
+
+new Chart(document.getElementById('incidentChart'), {
+  type: 'bar',
+  data: {
+    labels: incidentHalfLabels,
+    datasets: [{
+      label: 'Incidents',
+      data: incidentHalfData,
+      backgroundColor: incidentHalfData.map(v => v >= 15 ? '#ef4444' : v >= 8 ? '#f97316' : '#fca5a5'),
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#fff',
+        borderColor: '#EBEBF0',
+        borderWidth: 1,
+        titleColor: '#202020',
+        bodyColor: '#787878',
+        padding: 12,
+        callbacks: {
+          label: item => `Incidents: ${item.parsed.y}`,
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11, family: 'Satoshi' } } },
+      y: {
+        grid: { color: gridColor },
+        ticks: { color: tickColor, font: { family: 'Satoshi' }, stepSize: 5 },
+        title: { display: true, text: 'Incidents', color: tickColor, font: { size: 11 } },
+        min: 0,
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
