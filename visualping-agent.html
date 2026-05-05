@@ -6,20 +6,17 @@
   <title>Visualping Support</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+ 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
     :root {
       --blue: #1882FF;
-      --blue-dark: #0C6FE0;
       --navy: #0C2235;
       --gray-50: #F8FAFC;
       --gray-100: #F1F5F9;
-      --gray-300: #CBD5E1;
       --gray-500: #64748B;
-      --gray-700: #334155;
     }
-
+ 
     body {
       font-family: 'Inter', sans-serif;
       background: var(--gray-50);
@@ -28,8 +25,7 @@
       display: flex;
       flex-direction: column;
     }
-
-    /* NAV */
+ 
     nav {
       background: #fff;
       border-bottom: 1px solid var(--gray-100);
@@ -38,17 +34,10 @@
       display: flex;
       align-items: center;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-
+ 
+    .logo { display: flex; align-items: center; text-decoration: none; }
     .logo svg { height: 20px; width: auto; }
-
-    /* HERO */
+ 
     .hero {
       background: linear-gradient(135deg, #0C2235 0%, #1a3a5c 100%);
       color: #fff;
@@ -57,7 +46,7 @@
       position: relative;
       overflow: hidden;
     }
-
+ 
     .hero::before {
       content: '';
       position: absolute;
@@ -65,16 +54,16 @@
       background: radial-gradient(ellipse at 60% 50%, rgba(24,130,255,0.18) 0%, transparent 70%);
       pointer-events: none;
     }
-
+ 
     .hero h1 {
       font-size: clamp(1.8rem, 4vw, 2.8rem);
       font-weight: 700;
       letter-spacing: -0.02em;
       margin-bottom: 1rem;
     }
-
+ 
     .hero h1 span { color: var(--blue); }
-
+ 
     .hero p {
       font-size: 1.1rem;
       color: rgba(255,255,255,0.7);
@@ -82,7 +71,7 @@
       margin: 0 auto 2rem;
       line-height: 1.6;
     }
-
+ 
     .badge {
       display: inline-flex;
       align-items: center;
@@ -96,21 +85,19 @@
       border-radius: 99px;
       margin-bottom: 1.5rem;
     }
-
+ 
     .badge-dot {
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       background: #4ade80;
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
-
+ 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.4; }
     }
-
-    /* CARDS */
+ 
     .cards {
       display: flex;
       gap: 1rem;
@@ -120,7 +107,7 @@
       max-width: 900px;
       margin: 0 auto;
     }
-
+ 
     .card {
       background: #fff;
       border: 1px solid var(--gray-100);
@@ -129,11 +116,19 @@
       flex: 1 1 220px;
       max-width: 260px;
       box-shadow: 0 1px 4px rgba(12,34,53,0.06);
+      cursor: pointer;
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+      text-align: left;
     }
-
+ 
+    .card:hover {
+      border-color: var(--blue);
+      box-shadow: 0 4px 16px rgba(24,130,255,0.12);
+      transform: translateY(-2px);
+    }
+ 
     .card-icon {
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       background: #EEF5FF;
       border-radius: 10px;
       display: flex;
@@ -142,21 +137,11 @@
       margin-bottom: 1rem;
       font-size: 1.2rem;
     }
-
-    .card h3 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      color: var(--navy);
-    }
-
-    .card p {
-      font-size: 0.85rem;
-      color: var(--gray-500);
-      line-height: 1.5;
-    }
-
-    /* FOOTER */
+ 
+    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .card p { font-size: 0.85rem; color: var(--gray-500); line-height: 1.5; margin-bottom: 0.75rem; }
+    .card-cta { font-size: 0.8rem; font-weight: 600; color: var(--blue); }
+ 
     footer {
       margin-top: auto;
       text-align: center;
@@ -165,12 +150,12 @@
       color: var(--gray-500);
       border-top: 1px solid var(--gray-100);
     }
-
+ 
     footer a { color: var(--blue); text-decoration: none; }
   </style>
 </head>
 <body>
-
+ 
   <nav>
     <a class="logo" href="https://visualping.io">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 125 21">
@@ -182,73 +167,84 @@
       </svg>
     </a>
   </nav>
-
+ 
   <section class="hero">
-    <div class="badge">
-      <span class="badge-dot"></span>
-      AI Support Assistant
-    </div>
+    <div class="badge"><span class="badge-dot"></span> AI Support Assistant</div>
     <h1>How can we <span>help you</span> today?</h1>
     <p>Ask anything about Visualping — setup, features, integrations, billing, and more.</p>
   </section>
-
+ 
   <div class="cards">
-    <div class="card">
+    <div class="card" onclick="openChat('How do I get started with Visualping? Walk me through creating my first monitoring job.')">
       <div class="card-icon">🚀</div>
       <h3>Getting Started</h3>
       <p>Learn how to create your first monitoring job and set up alerts.</p>
+      <span class="card-cta">Ask the assistant →</span>
     </div>
-    <div class="card">
+    <div class="card" onclick="openChat('Can you explain Visualping job settings? I want to understand frequency, AI instructions, and actions.')">
       <div class="card-icon">⚙️</div>
       <h3>Job Settings</h3>
       <p>Configure frequency, AI instructions, actions, and notifications.</p>
+      <span class="card-cta">Ask the assistant →</span>
     </div>
-    <div class="card">
+    <div class="card" onclick="openChat('What integrations does Visualping support? How do I connect it to Slack, email, or webhooks?')">
       <div class="card-icon">🔗</div>
       <h3>Integrations</h3>
       <p>Connect Visualping to Slack, email, webhooks, and more.</p>
+      <span class="card-cta">Ask the assistant →</span>
     </div>
   </div>
-
+ 
   <footer>
     <p>Need more help? <a href="https://help.visualping.io">Browse the help center</a> or <a href="mailto:support@visualping.io">contact support</a>.</p>
   </footer>
-
+ 
   <script type="module">
     import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+ 
     Chatbot.init({
       chatflowid: "dcebcf38-d595-4eef-af8d-6b43ffec795a",
       apiHost: "https://cloud.flowiseai.com",
       theme: {
-        button: {
-          backgroundColor: "#1882FF",
-          right: 24,
-          bottom: 24,
-          size: 52,
-        },
+        button: { backgroundColor: "#1882FF", right: 24, bottom: 24, size: 52 },
         chatWindow: {
           welcomeMessage: "Hi! I'm the Visualping Assistant. How can I help you today?",
           backgroundColor: "#ffffff",
           height: 580,
           width: 380,
-          botMessage: {
-            backgroundColor: "#EEF5FF",
-            textColor: "#0C2235",
-          },
-          userMessage: {
-            backgroundColor: "#1882FF",
-            textColor: "#ffffff",
-          },
-          textInput: {
-            placeholder: "Ask a question...",
-            backgroundColor: "#ffffff",
-            textColor: "#0C2235",
-            sendButtonColor: "#1882FF",
-          }
+          botMessage: { backgroundColor: "#EEF5FF", textColor: "#0C2235" },
+          userMessage: { backgroundColor: "#1882FF", textColor: "#ffffff" },
+          textInput: { placeholder: "Ask a question...", sendButtonColor: "#1882FF" }
         }
       }
-    })
+    });
+ 
+    window.openChat = function(message) {
+      Chatbot.open();
+      // Give the chat window time to render before injecting the message
+      setTimeout(() => {
+        const host = document.querySelector('flowise-chatbot');
+        if (!host || !host.shadowRoot) return;
+        const textarea = host.shadowRoot.querySelector('textarea');
+        if (!textarea) return;
+ 
+        // Trigger React's synthetic input event
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+        nativeSetter.call(textarea, message);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+ 
+        // Click send after value is registered
+        setTimeout(() => {
+          const sendBtn = host.shadowRoot.querySelector('button[type="submit"]')
+            || [...host.shadowRoot.querySelectorAll('button')].find(b =>
+                b.getAttribute('aria-label')?.toLowerCase().includes('send') ||
+                b.type === 'submit'
+              );
+          if (sendBtn) sendBtn.click();
+        }, 150);
+      }, 700);
+    };
   </script>
-
+ 
 </body>
 </html>
