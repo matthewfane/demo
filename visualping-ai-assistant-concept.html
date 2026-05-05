@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualping AI Assistant — Concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --vp-blue-50:   #F7F9FE;
+    --vp-blue-100:  #EAF1FF;
+    --vp-blue-300:  #A8CBFF;
+    --vp-blue-500:  #1882FF;
+    --vp-blue-700:  #0B51AE;
+    --vp-blue-900:  #02307B;
+    --vp-darkblue-300: #335F88;
+    --vp-darkblue-400: #182F44;
+    --vp-darkblue-500: #0C2235;
+    --vp-darkblue-600: #0B1F31;
+    --vp-gray-100:  #F7F8FB;
+    --vp-gray-200:  #F2F4F8;
+    --vp-gray-300:  #E7EAF1;
+    --vp-gray-400:  #D1D4DB;
+    --vp-gray-600:  #98999B;
+    --vp-gray-700:  #787878;
+    --vp-gray-800:  #3A3A3A;
+    --vp-gray-900:  #202020;
+    --vp-teal-100:  #E6FAF8;
+    --vp-teal-500:  #0E9F94;
+    --vp-orange-100:#FFF6E5;
+    --vp-orange-500:#EC930D;
+    --vp-purple-100:#F3EEFF;
+    --vp-purple-500:#7C3AED;
+    --vp-green-100: #E6F9F0;
+    --vp-green-500: #16A34A;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--vp-gray-100);
+    color: var(--vp-gray-900);
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--vp-darkblue-500);
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-svg { height: 22px; }
+  .header-badge {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--vp-blue-300);
+    background: rgba(24,130,255,0.15);
+    border: 1px solid rgba(24,130,255,0.3);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--vp-darkblue-500);
+    padding: 72px 48px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(24,130,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--vp-blue-300);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    max-width: 680px;
+    margin: 0 auto 20px;
+  }
+  .hero h1 span { color: var(--vp-blue-500); }
+  .hero p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.65);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.65;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 0 32px 80px; }
+
+  /* ── CHAT DEMO ── */
+  .chat-section {
+    margin-top: -32px;
+    position: relative;
+    z-index: 10;
+  }
+  .scenario-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0;
+    padding: 0 4px;
+  }
+  .tab-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    padding: 9px 16px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.15); }
+  .tab-btn.active { background: #fff; color: var(--vp-gray-900); border-color: var(--vp-gray-300); font-weight: 600; }
+
+  .chat-shell {
+    background: #fff;
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 0 12px 12px 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(12,34,53,0.14);
+    display: flex;
+    height: 440px;
+  }
+
+  /* Sidebar */
+  .chat-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--vp-gray-100);
+    border-right: 1px solid var(--vp-gray-300);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--vp-gray-600);
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 8px;
+  }
+  .sidebar-label:first-child { margin-top: 0; }
+  .sidebar-item {
+    font-size: 12.5px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    color: var(--vp-gray-700);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.1s;
+  }
+  .sidebar-item:hover { background: var(--vp-gray-200); }
+  .sidebar-item.active { background: var(--vp-blue-100); color: var(--vp-blue-700); font-weight: 500; }
+  .sidebar-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--vp-blue-500);
+    flex-shrink: 0;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+  }
+
+  /* Chat main */
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .chat-topbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--vp-gray-300);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+  }
+  .ai-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--vp-blue-500), var(--vp-blue-700));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .ai-avatar svg { width: 14px; height: 14px; }
+  .chat-name { font-size: 13px; font-weight: 600; color: var(--vp-gray-900); }
+  .chat-status { font-size: 11px; color: var(--vp-green-500); display: flex; align-items: center; gap: 4px; margin-left: auto; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--vp-green-500); }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .msg { display: flex; gap: 10px; }
+  .msg.user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .msg-avatar.ai {
+    background: linear-gradient(135deg, var(--vp-blue-500), var(--vp-blue-700));
+    color: #fff;
+  }
+  .msg-avatar.user { background: var(--vp-gray-300); color: var(--vp-gray-700); }
+
+  .msg-content { max-width: 75%; display: flex; flex-direction: column; gap: 4px; }
+  .msg.user .msg-content { align-items: flex-end; }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .msg.ai .msg-bubble {
+    background: var(--vp-gray-100);
+    color: var(--vp-gray-900);
+    border-radius: 4px 12px 12px 12px;
+  }
+  .msg.user .msg-bubble {
+    background: var(--vp-blue-500);
+    color: #fff;
+    border-radius: 12px 4px 12px 12px;
+  }
+
+  .tool-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 100px;
+    margin: 2px 0;
+    border: 1px solid;
+  }
+  .tool-mcp    { background: var(--vp-blue-100);   color: var(--vp-blue-700);   border-color: #A8CBFF; }
+  .tool-help   { background: var(--vp-teal-100);   color: var(--vp-teal-500);   border-color: #99E6E0; }
+  .tool-search { background: var(--vp-orange-100); color: var(--vp-orange-500); border-color: #FDCE9F; }
+  .tool-history{ background: var(--vp-purple-100); color: var(--vp-purple-500); border-color: #C4B5FD; }
+
+  .tool-calls-row { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0 2px; }
+
+  .result-card {
+    background: #fff;
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--vp-gray-800);
+    margin-top: 4px;
+  }
+  .result-card .rc-label { font-weight: 600; color: var(--vp-gray-900); margin-bottom: 4px; font-size: 11.5px; }
+  .result-card .rc-row { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid var(--vp-gray-200); }
+  .result-card .rc-row:last-child { border-bottom: none; }
+  .rc-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--vp-green-100); color: var(--vp-green-500); }
+
+  .chat-input-row {
+    padding: 12px 16px;
+    border-top: 1px solid var(--vp-gray-300);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chat-input {
+    flex: 1;
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--vp-gray-700);
+    outline: none;
+    resize: none;
+    background: var(--vp-gray-50, #FCFCFD);
+  }
+  .chat-input:focus { border-color: var(--vp-blue-500); }
+  .send-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--vp-blue-500);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .send-btn:hover { background: var(--vp-blue-700); }
+
+  /* ── SCENARIO PANELS ── */
+  .scenario-panel { display: none; }
+  .scenario-panel.active { display: contents; }
+
+  /* ── TOOLS GRID ── */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--vp-gray-600);
+    margin: 56px 0 20px;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .tool-card {
+    background: #fff;
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 12px;
+    padding: 24px 20px;
+    box-shadow: 0 1px 3px rgba(16,24,40,.04);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .tool-card:hover {
+    box-shadow: 0 6px 20px rgba(12,34,53,0.10);
+    transform: translateY(-2px);
+  }
+  .tool-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .tool-icon svg { width: 20px; height: 20px; }
+  .tool-card h3 { font-size: 14px; font-weight: 600; color: var(--vp-gray-900); margin-bottom: 6px; }
+  .tool-card p { font-size: 12.5px; color: var(--vp-gray-700); line-height: 1.55; }
+  .tool-cap {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 100px;
+    margin-top: 10px;
+    border: 1px solid;
+  }
+
+  /* ── ARCHITECTURE ── */
+  .arch-wrap {
+    background: #fff;
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 16px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .arch-wrap::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--vp-blue-500), var(--vp-blue-300));
+  }
+  .arch-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+  }
+  .arch-hub {
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .arch-hub-ring {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--vp-blue-500), var(--vp-blue-700));
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+    box-shadow: 0 0 0 8px rgba(24,130,255,0.12), 0 0 0 16px rgba(24,130,255,0.06);
+    position: relative;
+  }
+  .hub-pulse {
+    position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(24,130,255,0.4);
+    animation: hub-ring 2.5s ease-out infinite;
+  }
+  @keyframes hub-ring {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+  .arch-hub-ring svg { width: 44px; height: 44px; }
+  .arch-hub-name { font-size: 14px; font-weight: 700; color: var(--vp-gray-900); }
+  .arch-hub-sub { font-size: 12px; color: var(--vp-gray-600); margin-top: 3px; }
+
+  .arch-connectors {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-width: 240px;
+  }
+  .arch-connectors.right { align-items: flex-start; }
+  .arch-connectors.left  { align-items: flex-end; }
+
+  .arch-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--vp-gray-100);
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 10px;
+    padding: 12px 14px;
+    width: 100%;
+    max-width: 240px;
+  }
+  .arch-node-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .arch-node-icon svg { width: 16px; height: 16px; }
+  .arch-node-text h4 { font-size: 12.5px; font-weight: 600; color: var(--vp-gray-900); }
+  .arch-node-text p  { font-size: 11px; color: var(--vp-gray-600); margin-top: 1px; }
+
+  .arch-line {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 2px 0;
+  }
+  .arch-arrow {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--vp-blue-300), var(--vp-blue-500));
+    border-radius: 2px;
+    position: relative;
+  }
+
+  /* ── EXEC IDEAS ── */
+  .ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .idea-card {
+    background: #fff;
+    border: 1px solid var(--vp-gray-300);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .idea-who {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--vp-gray-600);
+  }
+  .idea-text { font-size: 12.5px; font-weight: 500; color: var(--vp-gray-900); line-height: 1.45; }
+  .idea-tools { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--vp-darkblue-500);
+    padding: 24px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 60px;
+  }
+  footer p { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  /* scrollbar */
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--vp-gray-300); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 125 21">
+    <circle cx="10" cy="10.5" r="10" fill="#1882ff"></circle>
+    <g>
+      <path fill="#fff" fill-rule="evenodd" clip-rule="evenodd" d="M19.96 11.38a10.15 10.15 0 00.02-1.54l-3.71.78-3.13-2.66a.75.75 0 00-1.18.3l-1.71 4.4-1.98-7.73a.75.75 0 00-1.38-.19L4.27 9.37H.07a10.1 10.1 0 00-.06 1.5h4.7c.27 0 .52-.15.65-.38L7.28 7.1l2.1 8.2a.75.75 0 001.42.09l2.17-5.6 2.6 2.21c.18.15.42.21.65.16z"></path>
+      <path fill="#fff" d="M32.08 15.83h2.49l4.27-10.51h-2.61l-1.87 4.83c-.43 1.13-.8 2.23-.95 2.91a32.2 32.2 0 00-.91-2.91l-1.76-4.83H28zM41.7 3.17c.83 0 1.51-.68 1.51-1.55 0-.85-.68-1.53-1.51-1.53-.85 0-1.5.68-1.5 1.53 0 .87.65 1.55 1.5 1.55zm-1.27 12.66h2.53V5.32h-2.53zM44.9 12.68c.09 2.09 1.67 3.43 4.11 3.43 2.4 0 4.04-1.32 4.04-3.37 0-1.5-.91-2.53-2.59-2.95l-1.8-.45c-.77-.21-1.29-.49-1.29-1.17 0-.72.56-1.23 1.47-1.23.96 0 1.58.55 1.58 1.46h2.3c-.08-2.08-1.6-3.4-3.81-3.4-2.2 0-3.84 1.32-3.84 3.32 0 1.36.77 2.49 2.74 3.02l1.78.47c.66.19 1.08.5 1.08 1.1 0 .83-.77 1.22-1.7 1.22-1.12 0-1.76-.53-1.76-1.45zM58.92 16.1c1.39 0 2.71-.65 3.31-1.63l.17 1.36h2.36V5.32h-2.53v5.51c0 1.9-.7 2.96-2.36 2.96-1.28 0-2.18-.64-2.18-2.81V5.32h-2.52v6.57c0 2.51 1.32 4.22 3.75 4.22zM70.5 16.1c1.61 0 2.83-.74 3.27-1.82l.19 1.55h2.21V9.45C76.17 6.66 74.6 5 71.72 5c-2.65 0-4.48 1.51-4.46 3.77h2.16c-.02-1.09.78-1.75 2.17-1.75 1.25 0 2.12.55 2.12 2v.24l-2.92.23c-2.3.2-3.8 1.3-3.8 3.34 0 1.96 1.3 3.28 3.5 3.28zm.82-1.95c-1.14 0-1.76-.51-1.76-1.43 0-.85.54-1.36 2.03-1.5l2.14-.2v.55c0 1.96-1.33 2.58-2.4 2.58zM81.33 15.83V0h-2.52v15.83zM84.27 20.7h2.47v-6.32c.64 1.09 2.03 1.73 3.56 1.73 3.03 0 4.83-2.39 4.79-5.66-.06-3.3-1.9-5.45-4.81-5.45-1.55 0-2.96.7-3.59 1.91l-.14-1.6h-2.28zm2.57-10.13c0-1.89 1.12-3.2 2.88-3.2s2.82 1.33 2.82 3.2c0 1.88-1.06 3.2-2.82 3.2s-2.88-1.3-2.88-3.2zM98.42 3.17c.83 0 1.52-.68 1.52-1.55 0-.85-.69-1.53-1.52-1.53-.85 0-1.49.68-1.49 1.53 0 .87.64 1.55 1.5 1.55zm-1.26 12.66h2.53V5.32h-2.53zM105.05 15.83v-5.66c0-2.2 1.41-2.8 2.51-2.8.87 0 2.16.35 2.16 2.6v5.86h2.5V9.36c0-2.62-1.2-4.36-3.87-4.36-1.4 0-2.61.6-3.28 1.68l-.2-1.36h-2.34v10.51zM114.3 10.34c0 3.06 1.93 5.28 4.82 5.28 1.49 0 2.77-.62 3.41-1.64v1.79c0 1.72-1.05 2.87-2.81 2.87-1.58 0-2.66-.79-2.8-2.17h-2.55a4.98 4.98 0 005.2 4.53c3.32 0 5.43-2.23 5.43-5.7V5.32h-2.24l-.14 1.42c-.63-1.1-1.91-1.76-3.42-1.76-2.93 0-4.9 2.28-4.9 5.36zm2.58-.06c0-1.75 1.07-3.02 2.67-3.02 1.74 0 2.9 1.3 2.9 3.02 0 1.74-1.16 3.08-2.9 3.08-1.57 0-2.67-1.32-2.67-3.08z"></path>
+    </g>
+  </svg>
+  <span class="header-badge">AI Assistant — Concept</span>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Internal concept — exec review</p>
+  <h1>What if Visualping could just<br><span>talk to you?</span></h1>
+  <p>A native AI assistant that knows your monitors, your history, and how to use Visualping — so your team can describe what they need and get it done.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CHAT DEMO -->
+  <div class="chat-section">
+    <div class="scenario-tabs">
+      <button class="tab-btn active" onclick="switchTab(0)">Goal-based setup</button>
+      <button class="tab-btn" onclick="switchTab(1)">Chat with change history</button>
+      <button class="tab-btn" onclick="switchTab(2)">How-to / help</button>
+    </div>
+
+    <div class="chat-shell">
+      <!-- Sidebar -->
+      <div class="chat-sidebar">
+        <div class="sidebar-label">Assistant</div>
+        <div class="sidebar-item active">
+          <div class="sidebar-dot"></div>
+          Visualping AI
+        </div>
+        <div class="sidebar-label" style="margin-top:16px;">Tools connected</div>
+        <div class="sidebar-item" style="cursor:default;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1882FF" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          Visualping MCP
+        </div>
+        <div class="sidebar-item" style="cursor:default;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0E9F94" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Help articles
+        </div>
+        <div class="sidebar-item" style="cursor:default;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#EC930D" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Web search
+        </div>
+        <div class="sidebar-item" style="cursor:default;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Change history
+        </div>
+      </div>
+
+      <!-- Chat main -->
+      <div class="chat-main">
+        <div class="chat-topbar">
+          <div class="ai-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div>
+            <div class="chat-name">Visualping AI</div>
+          </div>
+          <div class="chat-status"><div class="status-dot"></div>Ready</div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <!-- injected by JS -->
+        </div>
+
+        <div class="chat-input-row">
+          <input class="chat-input" type="text" placeholder="Ask anything about your monitors, alerts or changes..." readonly>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="section-title">Tools the assistant has access to</div>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-icon" style="background:var(--vp-blue-100);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1882FF" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <h3>Visualping MCP</h3>
+      <p>Create, update and manage monitors. Trigger runs, read alerts, and build full monitoring setups — all from a conversation.</p>
+      <span class="tool-cap tool-mcp">Create monitors</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon" style="background:var(--vp-teal-100);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0E9F94" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <h3>Help articles</h3>
+      <p>Answers how-to questions using Visualping's documentation. Guides users through setup, actions, scripts and more.</p>
+      <span class="tool-cap tool-help">Answer how-tos</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon" style="background:var(--vp-orange-100);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#EC930D" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <h3>Web search</h3>
+      <p>Discovers URLs to monitor based on a user's goal. Finds the right pages so users never have to hunt manually.</p>
+      <span class="tool-cap tool-search">Find URLs</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon" style="background:var(--vp-purple-100);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>Change history</h3>
+      <p>Reads across your crawl history to answer questions. "What changed on our competitor's pricing page last quarter?"</p>
+      <span class="tool-cap tool-history">Query past changes</span>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="section-title">How it works</div>
+  <div class="arch-wrap">
+    <div class="arch-center">
+      <div class="arch-connectors left">
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--vp-blue-100);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1882FF" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="arch-node-text">
+            <h4>Visualping UI</h4>
+            <p>Chat panel inside the app</p>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--vp-orange-100);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EC930D" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="arch-node-text">
+            <h4>Slack / email</h4>
+            <p>Ask via existing channels</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-hub">
+        <div class="arch-hub-ring">
+          <div class="hub-pulse"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="arch-hub-name">Visualping AI</div>
+        <div class="arch-hub-sub">Powered by Claude</div>
+      </div>
+
+      <div class="arch-connectors right">
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--vp-blue-100);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1882FF" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div class="arch-node-text">
+            <h4>Visualping MCP</h4>
+            <p>Read and write monitors, alerts</p>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--vp-teal-100);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0E9F94" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="arch-node-text">
+            <h4>Help articles</h4>
+            <p>Contextual docs lookup</p>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--vp-orange-100);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EC930D" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <div class="arch-node-text">
+            <h4>Web + crawl history</h4>
+            <p>URL discovery and Q&amp;A</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXEC IDEAS -->
+  <div class="section-title">Ideas from your team — delivered by the assistant</div>
+  <div class="ideas-grid">
+    <div class="idea-card">
+      <div class="idea-who">Cyril + Eric</div>
+      <div class="idea-text">Goal-based monitoring agent — describe what you want to watch, the assistant builds the workspace.</div>
+      <div class="idea-tools">
+        <span class="tool-call tool-search">Web search</span>
+        <span class="tool-call tool-mcp">Visualping MCP</span>
+      </div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-who">Mohsen + Eric</div>
+      <div class="idea-text">Chat with your monitor history — ask "what changed on Facebook's ToS in the last 6 months?"</div>
+      <div class="idea-tools">
+        <span class="tool-call tool-history">Change history</span>
+        <span class="tool-call tool-mcp">Visualping MCP</span>
+      </div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-who">Bayan</div>
+      <div class="idea-text">Natural language job creation — describe a goal, skip the URL hunting entirely.</div>
+      <div class="idea-tools">
+        <span class="tool-call tool-search">Web search</span>
+        <span class="tool-call tool-mcp">Visualping MCP</span>
+      </div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-who">Trevor</div>
+      <div class="idea-text">URL curator agent — guided discovery of the right pages based on monitoring objective.</div>
+      <div class="idea-tools">
+        <span class="tool-call tool-search">Web search</span>
+        <span class="tool-call tool-mcp">Visualping MCP</span>
+      </div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-who">Cyril</div>
+      <div class="idea-text">Prompt playground reapplied to past runs — rethink how you process history, without re-crawling.</div>
+      <div class="idea-tools">
+        <span class="tool-call tool-history">Change history</span>
+        <span class="tool-call tool-mcp">Visualping MCP</span>
+      </div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-who">Bethel + Mohsen</div>
+      <div class="idea-text">Contextual help in-product — users ask how to do things and get answers without leaving the app.</div>
+      <div class="idea-tools">
+        <span class="tool-call tool-help">Help articles</span>
+        <span class="tool-call tool-mcp">Visualping MCP</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<footer>
+  <svg style="height:16px;opacity:0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 125 21">
+    <circle cx="10" cy="10.5" r="10" fill="#1882ff"></circle>
+    <path fill="#fff" fill-rule="evenodd" clip-rule="evenodd" d="M19.96 11.38a10.15 10.15 0 00.02-1.54l-3.71.78-3.13-2.66a.75.75 0 00-1.18.3l-1.71 4.4-1.98-7.73a.75.75 0 00-1.38-.19L4.27 9.37H.07a10.1 10.1 0 00-.06 1.5h4.7c.27 0 .52-.15.65-.38L7.28 7.1l2.1 8.2a.75.75 0 001.42.09l2.17-5.6 2.6 2.21c.18.15.42.21.65.16z"></path>
+  </svg>
+  <p>Internal concept — Visualping AI Assistant &nbsp;·&nbsp; May 2026</p>
+</footer>
+
+<script>
+const scenarios = [
+  {
+    input: "I want to monitor anktiva.com for any FDA drug approvals or notable trial mentions",
+    messages: [
+      { role: 'user', text: "I want to monitor anktiva.com for any FDA drug approvals or notable trial mentions" },
+      {
+        role: 'ai',
+        text: "Got it — let me find the right pages on anktiva.com for you.",
+        tools: ['search'],
+        delay: 600
+      },
+      {
+        role: 'ai',
+        text: "Found 4 pages worth monitoring. I'll set these up now.",
+        card: {
+          label: "Pages to monitor",
+          rows: [
+            { name: "anktiva.com/pipeline", badge: "Created" },
+            { name: "anktiva.com/news", badge: "Created" },
+            { name: "fda.gov/drugs (anktiva filter)", badge: "Created" },
+            { name: "clinicaltrials.gov (anktiva)", badge: "Created" },
+          ]
+        },
+        delay: 1000
+      },
+      {
+        role: 'ai',
+        text: "All 4 monitors are live. I've set them to check daily and alert you on any mentions of FDA, trial results, or approval status. Want a weekly digest report too?",
+        delay: 600
+      }
+    ]
+  },
+  {
+    input: "What were the notable changes on our competitor pricing pages in the last 3 months?",
+    messages: [
+      { role: 'user', text: "What were the notable changes on our competitor pricing pages in the last 3 months?" },
+      {
+        role: 'ai',
+        text: "Searching your change history across competitor monitors...",
+        tools: ['history', 'mcp'],
+        delay: 600
+      },
+      {
+        role: 'ai',
+        text: "Here's what stood out across your 6 competitor pricing monitors:",
+        card: {
+          label: "Pricing changes — last 90 days",
+          rows: [
+            { name: "Competitor A raised Pro plan by 20%", badge: "Feb 12" },
+            { name: "Competitor B added new Enterprise tier", badge: "Mar 3" },
+            { name: "Competitor C removed free plan", badge: "Apr 18" },
+          ]
+        },
+        delay: 1000
+      },
+      {
+        role: 'ai',
+        text: "Competitor B's new Enterprise tier is the most significant move — it targets the same segment as Visualping for Business. Want me to pull the full diff?",
+        delay: 600
+      }
+    ]
+  },
+  {
+    input: "How do I set up a monitor that only fires when a specific section of a page changes?",
+    messages: [
+      { role: 'user', text: "How do I set up a monitor that only fires when a specific section of a page changes?" },
+      {
+        role: 'ai',
+        text: "Looking that up in the help docs...",
+        tools: ['help'],
+        delay: 500
+      },
+      {
+        role: 'ai',
+        text: "You can use the visual selector to focus on a specific page region. Here's how:\n\n1. Open the monitor editor and click \"Select area\"\n2. Draw a box around the section you care about\n3. Visualping will only alert you when that region changes\n\nFor more control, you can also use CSS selectors or write a script to extract exactly the content you want to watch.",
+        delay: 800
+      },
+      {
+        role: 'ai',
+        text: "Want me to set this up for a specific URL now? Just paste it in.",
+        delay: 400
+      }
+    ]
+  }
+];
+
+let currentScenario = 0;
+let animating = false;
+
+function toolBadge(type) {
+  const map = {
+    mcp:     { cls: 'tool-mcp',     label: 'Visualping MCP' },
+    help:    { cls: 'tool-help',    label: 'Help articles' },
+    search:  { cls: 'tool-search',  label: 'Web search' },
+    history: { cls: 'tool-history', label: 'Change history' },
+  };
+  const t = map[type];
+  return `<span class="tool-call ${t.cls}">${t.label}</span>`;
+}
+
+function renderMessage(msg) {
+  const container = document.createElement('div');
+  container.className = `msg ${msg.role}`;
+
+  const avatarDiv = document.createElement('div');
+  avatarDiv.className = `msg-avatar ${msg.role}`;
+  avatarDiv.textContent = msg.role === 'ai' ? 'AI' : 'Me';
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'msg-content';
+
+  if (msg.tools && msg.tools.length) {
+    const toolRow = document.createElement('div');
+    toolRow.className = 'tool-calls-row';
+    toolRow.innerHTML = msg.tools.map(toolBadge).join('');
+    contentDiv.appendChild(toolRow);
+  }
+
+  if (msg.text) {
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.style.whiteSpace = 'pre-line';
+    bubble.textContent = msg.text;
+    contentDiv.appendChild(bubble);
+  }
+
+  if (msg.card) {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `<div class="rc-label">${msg.card.label}</div>` +
+      msg.card.rows.map(r => `<div class="rc-row"><span>${r.name}</span><span class="rc-badge">${r.badge}</span></div>`).join('');
+    contentDiv.appendChild(card);
+  }
+
+  container.appendChild(avatarDiv);
+  container.appendChild(contentDiv);
+  return container;
+}
+
+async function playScenario(idx) {
+  if (animating) return;
+  animating = true;
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML = '';
+
+  for (const msg of scenarios[idx].messages) {
+    await new Promise(r => setTimeout(r, msg.delay || 400));
+    msgs.appendChild(renderMessage(msg));
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  animating = false;
+}
+
+function switchTab(idx) {
+  currentScenario = idx;
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  const input = document.querySelector('.chat-input');
+  input.value = scenarios[idx].input;
+  playScenario(idx);
+}
+
+// Init
+switchTab(0);
+</script>
+</body>
+</html>
